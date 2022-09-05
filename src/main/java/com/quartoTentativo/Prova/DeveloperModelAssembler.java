@@ -1,0 +1,21 @@
+package com.quartoTentativo.Prova;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DeveloperModelAssembler implements RepresentationModelAssembler<Developer, EntityModel<Developer>> {
+	
+	@Override
+	public EntityModel<Developer> toModel(Developer developer){
+		
+		return EntityModel.of(developer, 
+		linkTo(methodOn(DevelopersController.class).one(developer.getId())).withSelfRel(),
+        linkTo(methodOn(DevelopersController.class).all()).withRel("developers"),
+        linkTo(methodOn(DevelopersController.class).assignTask(0L, developer.getId())).withRel("assignTask"),
+        linkTo(methodOn(DevelopersController.class).workHours(0f, developer.getId())).withRel("addHours"));
+	}
+}
