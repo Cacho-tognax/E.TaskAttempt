@@ -78,11 +78,12 @@ class DevelopersController {
 	}
 	
 	@PutMapping("/developers/{developerId}/assign")
-	EntityModel<Developer> assignTask(@RequestBody Long taskId, @PathVariable Long developerId){
-		Developer developer = repository.findById(developerId)
-				.orElseThrow(() -> new DeveloperNotFoundException(developerId));
-		developer.assignTask(taskId);
-		return assembler.toModel(developer);
+	EntityModel<Developer> assignTask(@RequestBody String taskIdString, @PathVariable Long developerId){
+		Long taskId = Long.valueOf(taskIdString);
+		return assembler.toModel(repository.findById(developerId).map(developer -> {
+			developer.assignTask(taskId);
+			return repository.save(developer);})
+				.orElseThrow(() -> new DeveloperNotFoundException(developerId)));
 	}
 	
 	@PutMapping("/developers/{developerId}/work")
