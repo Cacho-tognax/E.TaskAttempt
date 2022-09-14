@@ -10,7 +10,7 @@ import javax.persistence.Id;
 public class Developer {
 	@Id @GeneratedValue
 	private Long id;
-	private float workedHrs;
+	private Double workedHrs;
 	private String firstName;
 	private String lastName;
 	private ArrayList<Long> tasks;
@@ -18,10 +18,10 @@ public class Developer {
 	
 	public Developer() {}
 	
-	public Developer(String firstName, String lastName) {
+	public Developer(String firstName, String lastName, Double workedHrs) {
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.workedHrs = 0;
+		this.workedHrs = workedHrs;
 	}
 	
 	
@@ -34,7 +34,7 @@ public class Developer {
 		this.id = id;
 	}
 
-	public void setWorkedHrs(float workedHrs) {
+	public void setWorkedHrs(Double workedHrs) {
 		this.workedHrs = workedHrs;
 	}
 
@@ -61,7 +61,7 @@ public class Developer {
 		return id;
 	}
 
-	public float getWorkedHrs() {
+	public Double getWorkedHrs() {
 		return workedHrs;
 	}
 
@@ -73,9 +73,9 @@ public class Developer {
 		return lastName;
 	}
 	
-	public void addHrs(float hours) {
+	public void addHrs(Double hours) {
 		if (hours > 0) {
-		this.workedHrs+=hours;
+		this.workedHrs= hours+this.workedHrs;
 		}
 	}
 	

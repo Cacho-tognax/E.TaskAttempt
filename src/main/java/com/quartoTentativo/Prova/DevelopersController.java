@@ -42,8 +42,8 @@ class DevelopersController {
 	// end::get-aggregate-root[]
 
 	@PostMapping("/developers")
-	Developer newDeveloper(@RequestBody Developer newDeveloper) {
-		return repository.save(newDeveloper);
+	EntityModel<Developer> newDeveloper(@RequestBody Developer newDeveloper) {
+		return assembler.toModel(repository.save(newDeveloper));
 	}
 
 	// Single item
@@ -63,6 +63,7 @@ class DevelopersController {
 				.map(developer -> {
 					developer.setFirstName(newDeveloper.getFirstName());
 					developer.setLastName(newDeveloper.getLastName());
+					developer.setWorkedHrs(newDeveloper.getWorkedHrs());
 					return repository.save(developer);
 				})
 				.orElseGet(() -> {
@@ -85,10 +86,12 @@ class DevelopersController {
 	}
 	
 	@PutMapping("/developers/{developerId}/work")
-	EntityModel<Developer> workHours(@RequestBody float hours, @PathVariable Long developerId){
-		Developer developer = repository.findById(developerId)
-				.orElseThrow(() -> new DeveloperNotFoundException(developerId));
-		developer.addHrs(hours);
-		return assembler.toModel(developer);
+	EntityModel<Developer> workHours(@RequestBody String hours, @PathVariable Long developerId){
+		Double hour = Double.valueOf(hours);
+		return assembler.toModel(repository.findById(developerId).map(developer -> {
+			developer.addHrs(hour);
+			return repository.save(developer);})
+				.orElseThrow(() -> new DeveloperNotFoundException(developerId)));
+		
 	}
 }

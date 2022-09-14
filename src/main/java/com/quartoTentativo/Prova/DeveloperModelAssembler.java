@@ -16,6 +16,6 @@ public class DeveloperModelAssembler implements RepresentationModelAssembler<Dev
 		linkTo(methodOn(DevelopersController.class).one(developer.getId())).withSelfRel(),
         linkTo(methodOn(DevelopersController.class).all()).withRel("developers"),
         linkTo(methodOn(DevelopersController.class).assignTask(0L, developer.getId())).withRel("assignTask"),
-        linkTo(methodOn(DevelopersController.class).workHours(0f, developer.getId())).withRel("addHours"));
+        linkTo(methodOn(DevelopersController.class).workHours("", developer.getId())).withRel("addHours"));
 	}
 }

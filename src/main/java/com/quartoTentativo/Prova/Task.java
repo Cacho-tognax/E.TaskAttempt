@@ -19,15 +19,15 @@ public class Task {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private String name;
-	private float hoursWorked;
+	private Double hoursWorked;
 	private STATE condition;
 	private ArrayList<String> notes;
 	
 	protected Task() {}
 	
-	public Task(String name) {
+	public Task(String name, Double hoursWorked) {
 		this.name = name;
-		this.hoursWorked = 0;
+		this.hoursWorked = hoursWorked;
 		this.condition = STATE.inBacklog;
 	}
 	
@@ -47,7 +47,7 @@ public class Task {
 		this.name = name;
 	}
 
-	public void setHoursWorked(float hoursWorked) {
+	public void setHoursWorked(Double hoursWorked) {
 		this.hoursWorked = hoursWorked;
 	}
 
@@ -69,7 +69,7 @@ public class Task {
 	public String getName() {
 		return name;
 	}
-	public float getHoursWorked() {
+	public Double getHoursWorked() {
 		return hoursWorked;
 	}
 	public ArrayList<String> getNotes() {
@@ -80,7 +80,7 @@ public class Task {
 		this.notes.add(0, note);
 	}
 	
-	public void addHrs(float hours) {
+	public void addHrs(Double hours) {
 		if (hours > 0) {
 		this.hoursWorked += hours;
 		}

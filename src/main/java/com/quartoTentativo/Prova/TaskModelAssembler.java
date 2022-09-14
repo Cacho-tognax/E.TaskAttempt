@@ -24,7 +24,7 @@ public class TaskModelAssembler implements RepresentationModelAssembler<Task, En
 		
 		if (task.getCondition() == STATE.inProgress) {
 			taskModel.add(linkTo(methodOn(TasksController.class).complete(task.getId())).withRel("endWork"),
-					linkTo(methodOn(TasksController.class).clockIn(0f, task.getId())).withRel("addHours"));
+					linkTo(methodOn(TasksController.class).clockIn("", task.getId())).withRel("addHours"));
 			//There is a 0f that I don't THINK is an issue since to make the right link all you need is the id
 		}
 		

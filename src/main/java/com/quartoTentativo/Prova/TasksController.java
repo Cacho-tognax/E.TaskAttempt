@@ -61,6 +61,7 @@ class TasksController {
 		return assembler.toModel(repository.findById(taskId)
 				.map(task -> {
 					task.setName(newTask.getName());
+					task.setHoursWorked(newTask.getHoursWorked());
 					return repository.save(task);
 				})
 				.orElseGet(() -> {
@@ -92,11 +93,13 @@ class TasksController {
 	}
 	
 	@PutMapping("/tasks/{taskId}/work")
-	EntityModel<Task> clockIn(@RequestBody float hours, @PathVariable Long taskId) {
-		Task task = repository.findById(taskId)
+	EntityModel<Task> clockIn(@RequestBody String hours, @PathVariable Long taskId) {
+		Double hour = Double.valueOf(hours);
+		return repository.findById(taskId).map(task -> {
+			task.addHrs(hour);
+			return assembler.toModel(task);
+		})
 				.orElseThrow(() -> new TaskNotFoundException(taskId));
-		task.addHrs(hours);
-		return assembler.toModel(task);
 	}
 	
 	@PutMapping("/tasks/{taskId}/addNote")
