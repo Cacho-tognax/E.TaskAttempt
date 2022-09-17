@@ -16,7 +16,10 @@ public class Developer {
 	private ArrayList<Long> tasks;
 	
 	
-	public Developer() {}
+	public Developer() {
+		if(this.workedHrs == null)
+		    this.workedHrs = 0d;
+	}
 	
 	public Developer(String firstName, String lastName) {
 		this.firstName = firstName;
