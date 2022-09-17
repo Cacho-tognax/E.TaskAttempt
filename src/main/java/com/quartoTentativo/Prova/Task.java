@@ -25,9 +25,9 @@ public class Task {
 	
 	protected Task() {}
 	
-	public Task(String name, Double hoursWorked) {
+	public Task(String name) {
 		this.name = name;
-		this.hoursWorked = hoursWorked;
+		this.hoursWorked = 0d;
 		this.condition = STATE.inBacklog;
 	}
 	

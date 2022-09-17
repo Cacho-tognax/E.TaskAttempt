@@ -18,10 +18,10 @@ public class Developer {
 	
 	public Developer() {}
 	
-	public Developer(String firstName, String lastName, Double workedHrs) {
+	public Developer(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.workedHrs = workedHrs;
+		this.workedHrs = 0d;
 	}
 	
 	

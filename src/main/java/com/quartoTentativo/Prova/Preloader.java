@@ -11,16 +11,16 @@ class LoadDatabase {
 	CommandLineRunner initDatabase(DeveloperRepository repository) {
 
 		return args -> {
-			repository.save(new Developer("Default", "Tizio", 0d));
-			repository.save(new Developer("Default", "Sempronio", 0d));
+			repository.save(new Developer("Default", "Tizio"));
+			repository.save(new Developer("Default", "Sempronio"));
 		};
 	}
 
 	@Bean
 	CommandLineRunner initDatabase2(TaskRepository repository) {
 		return args -> {
-			repository.save(new Task("inizio", 0d));
-			repository.save(new Task("intermezzo", 0d));
+			repository.save(new Task("inizio"));
+			repository.save(new Task("intermezzo"));
 		};
 	}
 }
