@@ -98,20 +98,20 @@ class TasksController {
 	@PutMapping("/tasks/{taskId}/work")
 	EntityModel<Task> clockIn(@RequestBody String hours, @PathVariable Long taskId) {
 		Double hour = Double.valueOf(hours);
-		return repository.findById(taskId).map(task -> {
+		return assembler.toModel(repository.findById(taskId).map(task -> {
 			task.addHrs(hour);
-			return assembler.toModel(task);
+			return repository.save(task);
 		})
-				.orElseThrow(() -> new TaskNotFoundException(taskId));
+				.orElseThrow(() -> new TaskNotFoundException(taskId)));
 	}
 	
 	@PutMapping("/tasks/{taskId}/addNote")
 	EntityModel<Task> addNote(@RequestBody String note, @PathVariable Long taskId) {
-		return repository.findById(taskId).map(task -> {
+		return assembler.toModel(repository.findById(taskId).map(task -> {
 			task.addNote(note);
-			return assembler.toModel(task);
+			return repository.save(task);
 		})
-				.orElseThrow(() -> new TaskNotFoundException(taskId));
+				.orElseThrow(() -> new TaskNotFoundException(taskId)));
 		
 	}
 }
