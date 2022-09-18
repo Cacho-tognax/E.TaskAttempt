@@ -26,6 +26,8 @@ public class Task {
 	protected Task() {
 		if (this.hoursWorked == null)
 			this.hoursWorked = 0d;
+		if (this.condition == null)
+			this.condition = STATE.inBacklog;
 		if (this.notes == null)
 			this.notes = new ArrayList<String>();
 	}
