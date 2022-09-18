@@ -1,0 +1,1286 @@
+{
+	"info": {
+		"_postman_id": "93fd3154-ff7b-4999-8d94-639cc7e09218",
+		"name": "Ergon Test Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Developers",
+			"item": [
+				{
+					"name": "full developers list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Has self link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"self\");\r",
+									"});\r",
+									"pm.test(\"Has default developer1\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._embedded.developerList[0].lastName).to.eql(\"Tizio\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/developers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Non existing developer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Correctly 404 invalid request\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"developers\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/developers/99",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers",
+								"99"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "First developer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Is default developer1\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Tizio\");\r",
+									"});\r",
+									"pm.test(\"Has self link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"self\");\r",
+									"});\r",
+									"pm.test(\"Has developers link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"developers\");\r",
+									"});\r",
+									"pm.test(\"Has assignTask link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"assignTask\");\r",
+									"});\r",
+									"pm.test(\"Has addHours link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addHours\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/developers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add developer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_dev_firstName\",\r",
+									"    pm.variables.replaceIn(\"{{$randomFirstName}}\"));\r",
+									"pm.collectionVariables.set(\"new_dev_lastName\",\r",
+									"    pm.variables.replaceIn(\"{{$randomLastName}}\"));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var globalJsonData = pm.response.json();\r",
+									"pm.collectionVariables.set(\"new_dev_id\", globalJsonData.id);\r",
+									"pm.collectionVariables.set(\"new_dev_workedHrs\", 0);\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Has right name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.firstName).to.eql(\r",
+									"        pm.collectionVariables.get(\"new_dev_firstName\")\r",
+									"    );\r",
+									"    pm.expect(jsonData.lastName).to.eql(\r",
+									"        pm.collectionVariables.get(\"new_dev_lastName\")\r",
+									"    );\r",
+									"\r",
+									"});\r",
+									"pm.test(\"Has 0 worked hours\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.workedHrs).to.eql(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"{{new_dev_firstName}}\",\r\n    \"lastName\": \"{{new_dev_lastName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/developers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make new developer work",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_dev_workedHrs\", Math.random()*5);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"hours registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.workedHrs).to.eql(pm.collectionVariables.get(\"new_dev_workedHrs\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{new_dev_workedHrs}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/developers/{{new_dev_id}}/work",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers",
+								"{{new_dev_id}}",
+								"work"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make new developer work Again",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_dev_work_increment\", Math.random()*5)\r",
+									"pm.collectionVariables.set(\"new_dev_workedHrs\", pm.collectionVariables.get(\"new_dev_workedHrs\") + pm.collectionVariables.get(\"new_dev_work_increment\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"hours registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.workedHrs).to.eql(pm.collectionVariables.get(\"new_dev_workedHrs\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{new_dev_work_increment}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/developers/{{new_dev_id}}/work",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers",
+								"{{new_dev_id}}",
+								"work"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add task to developer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Task is registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.tasks[0]).to.eql(3);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "3"
+						},
+						"url": {
+							"raw": "{{base_url}}/developers/{{new_dev_id}}/assign",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers",
+								"{{new_dev_id}}",
+								"assign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add another task to developer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Both tasks are registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.tasks[0]).to.eql(3);\r",
+									"    pm.expect(jsonData.tasks[1]).to.eql(4);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "4"
+						},
+						"url": {
+							"raw": "{{base_url}}/developers/{{new_dev_id}}/assign",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers",
+								"{{new_dev_id}}",
+								"assign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change new developer's name",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_dev_firstName\",\r",
+									"    pm.variables.replaceIn(\"{{$randomFirstName}}\"));\r",
+									"pm.collectionVariables.set(\"new_dev_lastName\",\r",
+									"    pm.variables.replaceIn(\"{{$randomLastName}}\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Has right name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.firstName).to.eql(\r",
+									"        pm.collectionVariables.get(\"new_dev_firstName\")\r",
+									"    );\r",
+									"    pm.expect(jsonData.lastName).to.eql(\r",
+									"        pm.collectionVariables.get(\"new_dev_lastName\")\r",
+									"    );\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"{{new_dev_firstName}}\",\r\n    \"lastName\": \"{{new_dev_lastName}}\",\r\n    \"workedHrs\": {{new_dev_workedHrs}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/developers/{{new_dev_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers",
+								"{{new_dev_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Make sure changes stuck",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Has right name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.firstName).to.eql(\r",
+									"        pm.collectionVariables.get(\"new_dev_firstName\")\r",
+									"    );\r",
+									"    pm.expect(jsonData.lastName).to.eql(\r",
+									"        pm.collectionVariables.get(\"new_dev_lastName\")\r",
+									"    );\r",
+									"});\r",
+									"pm.test(\"has_right_hours\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.workedHrs).to.eql(pm.collectionVariables.get(\"new_dev_workedHrs\"));\r",
+									"});\r",
+									"pm.test(\"Both tasks are registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.tasks[0]).to.eql(3);\r",
+									"    pm.expect(jsonData.tasks[1]).to.eql(4);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/developers/{{new_dev_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"developers",
+								"{{new_dev_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Full tasks list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Has self link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"self\");\r",
+									"});\r",
+									"pm.test(\"Has default task1\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._embedded.taskList[0].name).to.eql(\"inizio\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Non existing task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Correctly 404 invalid request\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"tasks\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks/99",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"99"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "First task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Is default task\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"inizio\");\r",
+									"});\r",
+									"pm.test(\"Is in backlog\", function (){\r",
+									"    pm.expect(pm.response.text()).to.include(\"inBacklog\")\r",
+									"});\r",
+									"pm.test(\"Has self link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"self\");\r",
+									"});\r",
+									"pm.test(\"Has all tasks link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"tasks\");\r",
+									"});\r",
+									"pm.test(\"Has addNote link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addNote\");\r",
+									"});\r",
+									"pm.test(\"Has beginWork link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addNote\");\r",
+									"});\r",
+									"pm.test(\"Has NOT addHours link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.not.have.property(\"addHours\");\r",
+									"});\r",
+									"pm.test(\"Has NOT complete link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.not.have.property(\"endWork\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add task",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_task_name\",\r",
+									"    pm.variables.replaceIn(\"{{$randomBsBuzz}}\"));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var globalJsonData = pm.response.json();\r",
+									"pm.collectionVariables.set(\"new_task_id\", globalJsonData.id);\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Has right name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\r",
+									"        pm.collectionVariables.get(\"new_task_name\")\r",
+									"    );\r",
+									"\r",
+									"});\r",
+									"pm.test(\"Has 0 hours worked\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.hoursWorked).to.eql(0);\r",
+									"});\r",
+									"pm.test(\"Has addNote link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addNote\");\r",
+									"});\r",
+									"pm.test(\"Has beginWork link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"beginWork\");\r",
+									"});\r",
+									"pm.test(\"Has NOT addHours link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.not.have.property(\"addHours\");\r",
+									"});\r",
+									"pm.test(\"Has NOT complete link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.not.have.property(\"endWork\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{new_task_name}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "start new task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"State changed\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.condition).to.eql(\"inProgress\");\r",
+									"});\r",
+									"pm.test(\"Has addNote link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addNote\");\r",
+									"});\r",
+									"pm.test(\"Has NOT beginWork link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.not.have.property(\"beginWork\");\r",
+									"});\r",
+									"pm.test(\"Has addHours link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addHours\");\r",
+									"});\r",
+									"pm.test(\"Has complete link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"endWork\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}/begin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}",
+								"begin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make new task work",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_task_workedHrs\", Math.random()*5);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"hours registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.hoursWorked).to.eql(pm.collectionVariables.get(\"new_task_workedHrs\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{new_task_workedHrs}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}/work",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}",
+								"work"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make new task work again",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_task_work_increment\", Math.random()*5)\r",
+									"pm.collectionVariables.set(\"new_task_workedHrs\", pm.collectionVariables.get(\"new_task_workedHrs\") + pm.collectionVariables.get(\"new_task_work_increment\"));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"hours registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.hoursWorked).to.eql(pm.collectionVariables.get(\"new_task_workedHrs\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{new_task_work_increment}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}/work",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}",
+								"work"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add note",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_task_note\", pm.variables.replaceIn(\"{{$randomCatchPhrase}}\"))\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"note registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.notes[0]).to.eql(pm.collectionVariables.get(\"new_task_note\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{new_task_note}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}/addNote",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}",
+								"addNote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add another note",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_task_note2\", pm.variables.replaceIn(\"{{$randomCatchPhrase}}\"))\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"note1 persisted \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.notes[1]).to.eql(pm.collectionVariables.get(\"new_task_note\"));\r",
+									"});\r",
+									"pm.test(\"note2 registered\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.notes[0]).to.eql(pm.collectionVariables.get(\"new_task_note2\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{new_task_note2}}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}/addNote",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}",
+								"addNote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change new task's name",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"new_task_name\",\r",
+									"    pm.variables.replaceIn(\"{{$randomBsBuzz}}\"));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Has right name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\r",
+									"        pm.collectionVariables.get(\"new_task_name\")\r",
+									"    );\r",
+									"\r",
+									"});\r",
+									"pm.test(\"Has right status\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.condition).to.eql(\"inProgress\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{new_task_name}}\",\r\n    \"hoursWorked\": {{new_task_workedHrs}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "complete new task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"State changed\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.condition).to.eql(\"completed\");\r",
+									"});\r",
+									"pm.test(\"Has addNote link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addNote\");\r",
+									"});\r",
+									"pm.test(\"Has beginWork link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addNote\");\r",
+									"});\r",
+									"pm.test(\"Has NOT addHours link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.not.have.property(\"addHours\");\r",
+									"});\r",
+									"pm.test(\"Has NOT complete link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.not.have.property(\"endWork\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}/complete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}",
+								"complete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No wait go back",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"State changed\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.condition).to.eql(\"inProgress\");\r",
+									"});\r",
+									"pm.test(\"Has addNote link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addNote\");\r",
+									"});\r",
+									"pm.test(\"Has NOT beginWork link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.not.have.property(\"beginWork\");\r",
+									"});\r",
+									"pm.test(\"Has addHours link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"addHours\");\r",
+									"});\r",
+									"pm.test(\"Has complete link\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._links).to.have.property(\"endWork\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}/begin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}",
+								"begin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Make sure changes persisted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Correct status\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.condition).to.eql(\"inProgress\");\r",
+									"});\r",
+									"pm.test(\"Hours worked persisted\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.hoursWorked).to.eql(pm.collectionVariables.get(\"new_task_workedHrs\"));\r",
+									"});\r",
+									"pm.test(\"Nam persisted\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"new_task_name\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"notes persisted\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.notes[1]).to.eql(pm.collectionVariables.get(\"new_task_note\"));\r",
+									"    pm.expect(jsonData.notes[0]).to.eql(pm.collectionVariables.get(\"new_task_note2\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks/{{new_task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks",
+								"{{new_task_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "default"
+		},
+		{
+			"key": "new_dev_firstName",
+			"value": ""
+		},
+		{
+			"key": "new_dev_lastName",
+			"value": ""
+		},
+		{
+			"key": "new_dev_id",
+			"value": "null",
+			"type": "default"
+		},
+		{
+			"key": "new_dev_workedHrs",
+			"value": ""
+		},
+		{
+			"key": "new_dev_work_increment",
+			"value": ""
+		},
+		{
+			"key": "new_task_name",
+			"value": ""
+		},
+		{
+			"key": "new_task_id",
+			"value": ""
+		},
+		{
+			"key": "new_task_workedHrs",
+			"value": ""
+		},
+		{
+			"key": "new_task_work_increment",
+			"value": ""
+		},
+		{
+			"key": "new_task_note",
+			"value": ""
+		}
+	]
+}
