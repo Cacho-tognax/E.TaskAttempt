@@ -23,14 +23,20 @@ public class Task {
 	private STATE condition;
 	private ArrayList<String> notes;
 	
-	protected Task() {}
+	protected Task() {
+		if (this.hoursWorked == null)
+			this.hoursWorked = 0d;
+		if (this.notes == null)
+			this.notes = new ArrayList<String>();
+	}
 	
 	public Task(String name) {
 		this.name = name;
 		this.hoursWorked = 0d;
 		this.condition = STATE.inBacklog;
+		this.notes = new ArrayList<String>();
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.format(

@@ -40,7 +40,7 @@ class TasksController {
 	}
 	// end::get-aggregate-root[]
 
-	@PostMapping("/tasks/{developerId}")
+	@PostMapping("/tasks")
 	EntityModel<Task>newTask(@RequestBody Task newTask) {
 		return assembler.toModel(repository.save(newTask));
 	}
@@ -77,19 +77,22 @@ class TasksController {
 
 	@PutMapping("/tasks/{taskId}/begin")
 	EntityModel<Task> commenceWork(@PathVariable Long taskId) {
-		Task task = repository.findById(taskId)
-				.orElseThrow(() -> new TaskNotFoundException(taskId));
-		task.setCondition(STATE.inProgress);
-		return assembler.toModel(task);
+		return assembler.toModel(repository.findById(taskId).map(task -> {
+			task.setCondition(STATE.inProgress);
+			return repository.save(task);
+			})
+				.orElseThrow(() -> new TaskNotFoundException(taskId)));
 		
 	}
 	
 	@PutMapping("/tasks/{taskId}/complete")
 	EntityModel<Task> complete(@PathVariable Long taskId) {
-		Task task = repository.findById(taskId)
-				.orElseThrow(() -> new TaskNotFoundException(taskId));
-		task.setCondition(STATE.completed);
-		return assembler.toModel(task);
+		return assembler.toModel(repository.findById(taskId).map(task -> {
+			task.setCondition(STATE.completed);
+			return repository.save(task);
+			})
+				.orElseThrow(() -> new TaskNotFoundException(taskId)));
+		
 	}
 	
 	@PutMapping("/tasks/{taskId}/work")
@@ -104,10 +107,11 @@ class TasksController {
 	
 	@PutMapping("/tasks/{taskId}/addNote")
 	EntityModel<Task> addNote(@RequestBody String note, @PathVariable Long taskId) {
-		Task task = repository.findById(taskId)
+		return repository.findById(taskId).map(task -> {
+			task.addNote(note);
+			return assembler.toModel(task);
+		})
 				.orElseThrow(() -> new TaskNotFoundException(taskId));
-		task.addNote(note);
-		return assembler.toModel(task);
 		
 	}
 }

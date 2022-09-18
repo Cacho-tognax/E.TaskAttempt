@@ -19,12 +19,15 @@ public class Developer {
 	public Developer() {
 		if(this.workedHrs == null)
 		    this.workedHrs = 0d;
+		if(this.tasks == null)
+			this.tasks = new ArrayList<Long>();
 	}
 	
 	public Developer(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.workedHrs = 0d;
+		this.tasks = new ArrayList<Long>();
 	}
 	
 	
