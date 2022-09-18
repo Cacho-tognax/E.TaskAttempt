@@ -86,7 +86,10 @@ public class Developer {
 	}
 	
 	public void assignTask(Long taskId) {
-		this.tasks.add(taskId);
+		if (!this.tasks.contains(taskId))
+		    this.tasks.add(taskId);
+		//else
+			//TODO: add exception and error code throw
 	}
 
 }
